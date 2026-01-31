@@ -11,25 +11,33 @@ import { stripeWebhooks } from './controllers/webhook.js'
 
 const app = express()
 
-await connectDB()
-
-// Stripe webhook (RAW BODY REQUIRED)
+// ⚠️ Stripe webhook MUST be before json middleware
 app.post(
   '/api/stripe',
   express.raw({ type: 'application/json' }),
   stripeWebhooks
 )
 
-// Middleware
+// middleware
 app.use(cors())
 app.use(express.json())
 
-// Routes
+// ✅ DB connect INSIDE request lifecycle
+let isConnected = false
+app.use(async (req, res, next) => {
+  if (!isConnected) {
+    await connectDB()
+    isConnected = true
+  }
+  next()
+})
+
+// routes
 app.get('/', (req, res) => res.send('Server is live!'))
 app.use('/api/user', userRouter)
 app.use('/api/chat', chatRouter)
 app.use('/api/message', messageRouter)
 app.use('/api/credit', creditRouter)
 
-// ✅ VERY IMPORTANT FOR VERCEL
+// ✅ VERCEL REQUIREMENT
 export default app
