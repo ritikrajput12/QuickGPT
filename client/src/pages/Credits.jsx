@@ -17,7 +17,7 @@ const Credits = () => {
         }
       })
 
-      if (data && data.success && Array.isArray(data.plans)) {
+      if (data?.success && Array.isArray(data.plans)) {
         setPlans(data.plans)
       } else {
         setPlans([])
@@ -54,7 +54,7 @@ const Credits = () => {
 
   useEffect(() => {
     fetchPlans()
-    fetchUser()      // 🔥 यही main fix है
+    fetchUser()   // 👈 यही MAIN FIX
   }, [])
 
   if (loading) return <Loading />
