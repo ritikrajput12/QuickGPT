@@ -1,9 +1,10 @@
 import Chat from "../models/Chat.js"
 import User from "../models/User.js"
-import openai from "../configs/openai.js"
+import genAI from "../configs/gemini.js"
 import axios from "axios"
 import imagekit from "../configs/imagekit.js"
 
+// TEXT MESSAGE
 export const textMessageController = async (req, res) => {
   try {
     const userId = req.user._id
@@ -33,14 +34,16 @@ export const textMessageController = async (req, res) => {
 
     chat.updatedAt = new Date()
 
-    const completion = await openai.chat.completions.create({
-       model: "gemini-1.5-flash-001",
-      messages: [{ role: "user", content: prompt }]
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash"
     })
+
+    const result = await model.generateContent(prompt)
+    const responseText = result.response.text()
 
     const aiMsg = {
       role: "assistant",
-      content: completion.choices[0].message.content,
+      content: responseText,
       timestamps: Date.now(),
       isImage: false
     }
@@ -55,12 +58,12 @@ export const textMessageController = async (req, res) => {
 
     res.json({ success: true, reply: aiMsg })
   } catch (err) {
-      console.log("OPENAI ERROR STATUS:", err.status)
-     console.log("OPENAI ERROR MESSAGE:", err.message)
+    console.log("GEMINI ERROR:", err.message)
     res.json({ success: false, message: err.message })
   }
 }
 
+// IMAGE MESSAGE
 export const imageMessageController = async (req, res) => {
   try {
     const userId = req.user._id
@@ -127,10 +130,10 @@ export const imageMessageController = async (req, res) => {
 
     res.json({ success: true, reply: aiMsg })
   } catch (err) {
+    console.log("IMAGE ERROR:", err.message)
     res.json({ success: false, message: err.message })
   }
 }
-
 
 
 
