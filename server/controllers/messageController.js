@@ -18,12 +18,14 @@ export const textMessageController = async (req, res) => {
       return res.json({ success: false, message: "Chat not found" })
     }
 
-    chat.messages.push({
+    const userMsg = {
       role: "user",
       content: prompt,
       timestamps: Date.now(),
       isImage: false
-    })
+    }
+
+    chat.messages.push(userMsg)
 
     if (!chat.name || chat.name === "New Chat") {
       chat.name = prompt.slice(0, 30)
@@ -36,13 +38,14 @@ export const textMessageController = async (req, res) => {
       messages: [{ role: "user", content: prompt }]
     })
 
-    chat.messages.push({
+    const aiMsg = {
       role: "assistant",
       content: completion.choices[0].message.content,
       timestamps: Date.now(),
       isImage: false
-    })
+    }
 
+    chat.messages.push(aiMsg)
     await chat.save()
 
     await User.updateOne(
@@ -50,7 +53,7 @@ export const textMessageController = async (req, res) => {
       { $inc: { credits: -1 } }
     )
 
-    res.json({ success: true })
+    res.json({ success: true, reply: aiMsg })
   } catch (err) {
     res.json({ success: false, message: err.message })
   }
@@ -70,12 +73,14 @@ export const imageMessageController = async (req, res) => {
       return res.json({ success: false, message: "Chat not found" })
     }
 
-    chat.messages.push({
+    const userMsg = {
       role: "user",
       content: prompt,
       timestamps: Date.now(),
       isImage: false
-    })
+    }
+
+    chat.messages.push(userMsg)
 
     if (!chat.name || chat.name === "New Chat") {
       chat.name = prompt.slice(0, 30)
@@ -102,14 +107,15 @@ export const imageMessageController = async (req, res) => {
       folder: "quickgpt"
     })
 
-    chat.messages.push({
+    const aiMsg = {
       role: "assistant",
       content: upload.url,
       timestamps: Date.now(),
       isImage: true,
       isPublished: Boolean(isPublished)
-    })
+    }
 
+    chat.messages.push(aiMsg)
     await chat.save()
 
     await User.updateOne(
@@ -117,7 +123,7 @@ export const imageMessageController = async (req, res) => {
       { $inc: { credits: -2 } }
     )
 
-    res.json({ success: true })
+    res.json({ success: true, reply: aiMsg })
   } catch (err) {
     res.json({ success: false, message: err.message })
   }
