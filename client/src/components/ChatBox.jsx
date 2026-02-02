@@ -56,19 +56,21 @@ const ChatBox = () => {
       const updatedChat = {
         ...prev,
         name: firstMessage ? promptCopy.slice(0, 30) : prev.name,
-        messages: [...prev.messages, userMessage],
+        messages: prev.messages.concat(userMessage),
         updatedAt: Date.now()
       }
 
       setChats(prevChats =>
         prevChats
           .map(chat =>
-            chat._id === updatedChat._id ? updatedChat : chat
+            chat._id === updatedChat._id
+              ? { ...updatedChat }
+              : chat
           )
           .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
       )
 
-      return updatedChat
+      return { ...updatedChat }
     })
 
     try {
@@ -82,19 +84,21 @@ const ChatBox = () => {
         setSelectedChat(prev => {
           const updatedChat = {
             ...prev,
-            messages: [...prev.messages, data.reply],
+            messages: prev.messages.concat(data.reply),
             updatedAt: Date.now()
           }
 
           setChats(prevChats =>
             prevChats
               .map(chat =>
-                chat._id === updatedChat._id ? updatedChat : chat
+                chat._id === updatedChat._id
+                  ? { ...updatedChat }
+                  : chat
               )
               .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
           )
 
-          return updatedChat
+          return { ...updatedChat }
         })
 
         setUser(prev => ({
