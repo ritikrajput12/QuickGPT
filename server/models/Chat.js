@@ -12,7 +12,7 @@ const messageSchema = new mongoose.Schema({
   },
   timestamps: {
     type: Number,
-    required: true, // 🔴 MUST MATCH CONTROLLER
+    required: true, 
   },
   isImage: {
     type: Boolean,

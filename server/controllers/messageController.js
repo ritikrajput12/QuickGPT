@@ -22,8 +22,8 @@ export const textMessageController = async (req, res) => {
     chat.messages.push({
       role: "user",
       content: prompt,
-      timestamp: Date.now(),
-      isImage: false,
+      timestamps: Date.now(),
+      isImage: false
     });
 
     if (!chat.name || chat.name === "New Chat") {
@@ -34,14 +34,14 @@ export const textMessageController = async (req, res) => {
 
     const completion = await openai.chat.completions.create({
       model: "gemini-3-flash-preview",
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: prompt }]
     });
 
     const reply = {
       role: "assistant",
       content: completion.choices?.[0]?.message?.content || "No response",
-      timestamp: Date.now(),
-      isImage: false,
+      timestamps: Date.now(),
+      isImage: false
     };
 
     chat.messages.push(reply);
@@ -77,8 +77,8 @@ export const imageMessageController = async (req, res) => {
     chat.messages.push({
       role: "user",
       content: prompt,
-      timestamp: Date.now(),
-      isImage: false,
+      timestamps: Date.now(),
+      isImage: false
     });
 
     if (!chat.name || chat.name === "New Chat") {
@@ -88,7 +88,6 @@ export const imageMessageController = async (req, res) => {
     chat.updatedAt = new Date();
 
     const encodedPrompt = encodeURIComponent(prompt);
-
     const imageUrl =
       process.env.IMAGEKIT_URL_ENDPOINT +
       "/ik-genimg-prompt-" +
@@ -96,7 +95,7 @@ export const imageMessageController = async (req, res) => {
       "/quickgpt.png";
 
     const imageResponse = await axios.get(imageUrl, {
-      responseType: "arraybuffer",
+      responseType: "arraybuffer"
     });
 
     const base64Image =
@@ -106,15 +105,15 @@ export const imageMessageController = async (req, res) => {
     const upload = await imagekit.upload({
       file: base64Image,
       fileName: Date.now() + ".png",
-      folder: "quickgpt",
+      folder: "quickgpt"
     });
 
     const reply = {
       role: "assistant",
       content: upload.url,
-      timestamp: Date.now(),
+      timestamps: Date.now(),
       isImage: true,
-      isPublished: Boolean(isPublished),
+      isPublished: Boolean(isPublished)
     };
 
     chat.messages.push(reply);
