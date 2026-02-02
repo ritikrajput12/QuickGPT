@@ -8,6 +8,7 @@ export const stripeWebhooks = async (request, response) => {
   const sig = request.headers["stripe-signature"];
   let event;
 
+  // verify signature
   try {
     event = stripe.webhooks.constructEvent(
       request.body,
@@ -20,21 +21,26 @@ export const stripeWebhooks = async (request, response) => {
   }
 
   try {
-    if (event.type !== "checkout.session.completed") {
+    // handle ONLY payment_intent.succeeded (tumhare Stripe me yehi aa raha hai)
+    if (event.type !== "payment_intent.succeeded") {
       return response.json({ received: true });
     }
 
-    const session = event.data.object;
+    const paymentIntent = event.data.object;
 
-    if (!session.metadata) {
-      console.log("No metadata found in session");
+    // payment_intent -> checkout session nikaalo
+    const sessions = await stripe.checkout.sessions.list({
+      payment_intent: paymentIntent.id,
+      limit: 1,
+    });
+
+    const session = sessions.data[0];
+    if (!session || !session.metadata) {
       return response.json({ received: true });
     }
 
     const { transactionId, appId } = session.metadata;
-
     if (appId !== "quickgpt") {
-      console.log("Invalid appId");
       return response.json({ received: true });
     }
 
@@ -44,19 +50,20 @@ export const stripeWebhooks = async (request, response) => {
     });
 
     if (!transaction) {
-      console.log("Transaction not found or already paid");
       return response.json({ received: true });
     }
 
+    // add credits
     await User.updateOne(
       { _id: transaction.userId },
       { $inc: { credits: transaction.credits } }
     );
 
+    // mark paid
     transaction.isPaid = true;
     await transaction.save();
 
-    console.log("Credits added successfully");
+    console.log("Credits updated successfully");
 
     return response.json({ received: true });
   } catch (error) {
