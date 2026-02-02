@@ -7,7 +7,7 @@ const Credits = () => {
   const [plans, setPlans] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const { token, axios } = useAppContext()
+  const { token, axios, fetchUser } = useAppContext()
 
   const fetchPlans = async () => {
     try {
@@ -17,16 +17,13 @@ const Credits = () => {
         }
       })
 
-      console.log('CREDIT API RESPONSE 👉', data)
-
-      if (data?.success && Array.isArray(data.plans)) {
+      if (data && data.success && Array.isArray(data.plans)) {
         setPlans(data.plans)
       } else {
         setPlans([])
         toast.error('Invalid plans data')
       }
     } catch (error) {
-      console.error(error)
       toast.error(error.message)
     } finally {
       setLoading(false)
@@ -57,6 +54,7 @@ const Credits = () => {
 
   useEffect(() => {
     fetchPlans()
+    fetchUser()      // 🔥 यही main fix है
   }, [])
 
   if (loading) return <Loading />
