@@ -34,7 +34,7 @@ export const textMessageController = async (req, res) => {
     chat.updatedAt = new Date()
 
     const completion = await openai.chat.completions.create({
-       model: "gemini-1.5-flash-latest",
+       model: "gemini-1.5-flash-001",
       messages: [{ role: "user", content: prompt }]
     })
 
