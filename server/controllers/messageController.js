@@ -34,7 +34,7 @@ export const textMessageController = async (req, res) => {
     chat.updatedAt = new Date()
 
     const completion = await openai.chat.completions.create({
-      model: "gemini-3-flash-preview",
+       model: "gemini-1.5-flash",
       messages: [{ role: "user", content: prompt }]
     })
 
@@ -55,6 +55,8 @@ export const textMessageController = async (req, res) => {
 
     res.json({ success: true, reply: aiMsg })
   } catch (err) {
+      console.log("OPENAI ERROR STATUS:", err.status)
+     console.log("OPENAI ERROR MESSAGE:", err.message)
     res.json({ success: false, message: err.message })
   }
 }
