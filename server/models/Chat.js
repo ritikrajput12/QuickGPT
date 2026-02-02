@@ -10,9 +10,9 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  timestamps: {
+  timestamp: {
     type: Number,
-    required: true, 
+    required: true,
   },
   isImage: {
     type: Boolean,
@@ -43,4 +43,3 @@ const chatSchema = new mongoose.Schema(
 
 const Chat = mongoose.model("Chat", chatSchema);
 export default Chat;
-
