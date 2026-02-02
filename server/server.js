@@ -22,7 +22,7 @@ app.post(
 app.use(cors())
 app.use(express.json())
 
-// DB connect ONCE (Render pe safe hai)
+// DB connect ONCE
 connectDB()
 
 // routes
@@ -32,7 +32,6 @@ app.use('/api/chat', chatRouter)
 app.use('/api/message', messageRouter)
 app.use('/api/credit', creditRouter)
 
-// Render needs listen
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)

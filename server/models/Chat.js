@@ -1,20 +1,46 @@
 import mongoose from "mongoose";
 
-const ChatSchema = new mongoose.Schema({
-    userId : {type: String, ref: "User", required: true},
-    userName: {type: String, required: true},
-    name: {type: String, required: true},
-    messages: [
-        {
-            isImage: {type: Boolean, required: true},
-            isPublished: {type: Boolean, default: false},
-            role: { type: String, required: true},
-            content: { type: String, required: true },
-            timestamps: { type: Number, required: true},
-        }
-    ]
-}, {timestamps: true})
+const messageSchema = new mongoose.Schema({
+  role: {
+    type: String,
+    enum: ["user", "assistant"],
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  timestamps: {
+    type: Number,
+    required: true, // 🔴 MUST MATCH CONTROLLER
+  },
+  isImage: {
+    type: Boolean,
+    default: false,
+  },
+  isPublished: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-const Chat = mongoose.model('Chat', ChatSchema)
+const chatSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    userName: String,
+    name: {
+      type: String,
+      default: "New Chat",
+    },
+    messages: [messageSchema],
+  },
+  { timestamps: true }
+);
 
+const Chat = mongoose.model("Chat", chatSchema);
 export default Chat;
+

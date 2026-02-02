@@ -1,87 +1,124 @@
 import User from "../models/User.js";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import Chat from "../models/Chat.js";
 
-//Generate JWT
-const generationToken = (id)=> {
-    return jwt.sign({id}, process.env.JWT_SECRET, {
-        expiresIn: '30d'
-    })
-}
+// Generate JWT
+const generationToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
 
-//API to register user
+// ================= REGISTER =================
 export const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
+  const { name, email, password } = req.body;
 
-    try {
-        const userExists = await User.findOne({email})
-
-        if(userExists){
-            return res.json({success: false, message: "User already exists"})
-        }
-
-        const user = await User.create({name, email, password})
-
-        const token = generationToken(user._id)
-        res.json({success: true, token})
-    } catch (error) {
-        return res.json({success: false, message: error.message })
-
+  try {
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.json({
+        success: false,
+        message: "User already exists",
+      });
     }
-} 
 
-//API to login user
+    // ❗❗ YAHI MAIN BUG THA
+    // ❌ yahan bcrypt.hash NAHI karna
+    // ✅ hashing User model (pre save) me hoti hai
+
+    const user = await User.create({
+      name,
+      email,
+      password, // plain password bhejo
+    });
+
+    const token = generationToken(user._id);
+
+    res.json({
+      success: true,
+      token,
+    });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// ================= LOGIN =================
 export const loginUser = async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
-        const user = await User.findOne({email})
-        if(user) {
-            const isMatch = await bcrypt.compare(password, user.password)
+  const { email, password } = req.body;
 
-            if(isMatch){
-                const token = generationToken(user._id);
-                return res.json({ success: true, token })
-            }
-        }
-        res.json({success: false, message: 'Invalid email or password'})
-    } catch (error) {
-        return res.json({success: false, message: error.message })
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "Invalid email or password",
+      });
     }
-}
 
-//API TO GET USER DATA
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const token = generationToken(user._id);
+
+    res.json({
+      success: true,
+      token,
+    });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// ================= USER DATA =================
 export const getUser = async (req, res) => {
-    try {
-        const user = req.user;
-        return res.json({success: true, user})
-    } catch (error) {
-        return res.json({success: false, message: error.message})
-    }
-}
+  res.json({
+    success: true,
+    user: req.user,
+  });
+};
 
-// API to get published images
+// ================= COMMUNITY IMAGES =================
 export const getPublishedImages = async (req, res) => {
-    try {
-        const publishedImageMessages = await Chat.aggregate([
-            {$unwind: "$messages"},
-            {
-                $match: {
-                    "messages.isImage": true,
-                    "messages.isPublished": true
-                }
-            },    
-                {
-                    $project: {
-                        _id: 0,
-                        imageUrl: "$messages.content",
-                        userName: "$userName"
-                    }
-                }
-        ])
+  try {
+    const images = await Chat.aggregate([
+      { $unwind: "$messages" },
+      {
+        $match: {
+          "messages.isImage": true,
+          "messages.isPublished": true,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          imageUrl: "$messages.content",
+          userName: "$userName",
+        },
+      },
+    ]);
 
-        res.json({ success: true, images: publishedImageMessages.reverse()})
-    } catch (error) {
-        res.json({ success: false, message: error.message });
-    }
-}
+    res.json({
+      success: true,
+      images: images.reverse(),
+    });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
