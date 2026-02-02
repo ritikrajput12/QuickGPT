@@ -4,9 +4,7 @@ import openai from "../configs/openai.js";
 import axios from "axios";
 import imagekit from "../configs/imagekit.js";
 
-/* =========================
-   TEXT MESSAGE CONTROLLER
-========================= */
+/* TEXT MESSAGE */
 export const textMessageController = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -21,20 +19,17 @@ export const textMessageController = async (req, res) => {
       return res.json({ success: false, message: "Chat not found" });
     }
 
-    // USER MESSAGE
     chat.messages.push({
       role: "user",
       content: prompt,
-      timestamps: Date.now(),
+      timestamp: Date.now(),
       isImage: false,
     });
 
-    // 🔥 IMPORTANT: SET CHAT NAME ON FIRST MESSAGE
     if (!chat.name || chat.name === "New Chat") {
       chat.name = prompt.slice(0, 30);
     }
 
-    // 🔥 IMPORTANT: FORCE UPDATED TIME (SIDEBAR SORT)
     chat.updatedAt = new Date();
 
     const completion = await openai.chat.completions.create({
@@ -44,9 +39,8 @@ export const textMessageController = async (req, res) => {
 
     const reply = {
       role: "assistant",
-      content:
-        completion.choices?.[0]?.message?.content || "No response",
-      timestamps: Date.now(),
+      content: completion.choices?.[0]?.message?.content || "No response",
+      timestamp: Date.now(),
       isImage: false,
     };
 
@@ -60,14 +54,12 @@ export const textMessageController = async (req, res) => {
 
     res.json({ success: true, reply });
   } catch (error) {
-    console.error("TEXT MESSAGE ERROR:", error);
+    console.log("TEXT ERROR:", error);
     res.json({ success: false, message: error.message });
   }
 };
 
-/* =========================
-   IMAGE MESSAGE CONTROLLER
-========================= */
+/* IMAGE MESSAGE */
 export const imageMessageController = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -85,37 +77,44 @@ export const imageMessageController = async (req, res) => {
     chat.messages.push({
       role: "user",
       content: prompt,
-      timestamps: Date.now(),
+      timestamp: Date.now(),
       isImage: false,
     });
 
-    // 🔥 CHAT NAME + UPDATED TIME
     if (!chat.name || chat.name === "New Chat") {
       chat.name = prompt.slice(0, 30);
     }
+
     chat.updatedAt = new Date();
 
     const encodedPrompt = encodeURIComponent(prompt);
-    const imageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodedPrompt}/quickgpt/${Date.now()}.png`;
 
-    const imgRes = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    const imageUrl =
+      process.env.IMAGEKIT_URL_ENDPOINT +
+      "/ik-genimg-prompt-" +
+      encodedPrompt +
+      "/quickgpt.png";
 
-    const base64Image = `data:image/png;base64,${Buffer.from(
-      imgRes.data
-    ).toString("base64")}`;
+    const imageResponse = await axios.get(imageUrl, {
+      responseType: "arraybuffer",
+    });
+
+    const base64Image =
+      "data:image/png;base64," +
+      Buffer.from(imageResponse.data).toString("base64");
 
     const upload = await imagekit.upload({
       file: base64Image,
-      fileName: `${Date.now()}.png`,
+      fileName: Date.now() + ".png",
       folder: "quickgpt",
     });
 
     const reply = {
       role: "assistant",
       content: upload.url,
-      timestamps: Date.now(),
+      timestamp: Date.now(),
       isImage: true,
-      isPublished: !!isPublished,
+      isPublished: Boolean(isPublished),
     };
 
     chat.messages.push(reply);
@@ -128,7 +127,7 @@ export const imageMessageController = async (req, res) => {
 
     res.json({ success: true, reply });
   } catch (error) {
-    console.error("IMAGE MESSAGE ERROR:", error);
+    console.log("IMAGE ERROR:", error);
     res.json({ success: false, message: error.message });
   }
 };
