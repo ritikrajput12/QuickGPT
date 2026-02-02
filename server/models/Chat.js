@@ -10,7 +10,7 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  timestamp: {
+  timestamps: {
     type: Number,
     required: true,
   },
@@ -41,5 +41,4 @@ const chatSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Chat = mongoose.model("Chat", chatSchema);
-export default Chat;
+export default mongoose.model("Chat", chatSchema);
