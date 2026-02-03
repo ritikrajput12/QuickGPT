@@ -17,7 +17,6 @@ export const AppContextProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"))
   const [loadingUser, setLoadingUser] = useState(true)
 
-  // FETCH USER CHATS
   const fetchUserChats = async () => {
     try {
       const { data } = await axios.get("/api/chat/get", {
@@ -27,7 +26,6 @@ export const AppContextProvider = ({ children }) => {
       if (data.success) {
         setChats(data.chats)
 
-        // ❗ FIX: selectedChat ko yahan overwrite nahi karna
         if (!selectedChat && data.chats.length > 0) {
           setSelectedChat(data.chats[0])
         }
@@ -39,12 +37,11 @@ export const AppContextProvider = ({ children }) => {
     }
   }
 
-  // CREATE NEW CHAT
   const createNewChat = async () => {
     try {
       if (!user) return toast.error("Login first")
 
-      navigate("/")
+      setSelectedChat(null)
 
       const { data } = await axios.get("/api/chat/create", {
         headers: { Authorization: `Bearer ${token}` },
@@ -58,7 +55,6 @@ export const AppContextProvider = ({ children }) => {
     }
   }
 
-  // FETCH USER
   const fetchUser = async () => {
     try {
       const { data } = await axios.get("/api/user/data", {
@@ -78,7 +74,6 @@ export const AppContextProvider = ({ children }) => {
     }
   }
 
-  // THEME
   useEffect(() => {
     if (theme === "dark") {
       document.documentElement.classList.add("dark")
@@ -88,7 +83,6 @@ export const AppContextProvider = ({ children }) => {
     localStorage.setItem("theme", theme)
   }, [theme])
 
-  // USER LOGOUT CLEANUP
   useEffect(() => {
     if (!user) {
       setChats([])
@@ -96,7 +90,6 @@ export const AppContextProvider = ({ children }) => {
     }
   }, [user])
 
-  // TOKEN CHANGE
   useEffect(() => {
     if (token) fetchUser()
     else {

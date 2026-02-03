@@ -63,14 +63,12 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
       ${!isMenuOpen && 'max-md:-translate-x-full'}`}
     >
 
-      {/* Logo */}
       <img
         src={theme === 'dark' ? assets.logo_full : assets.logo_full_dark}
         alt=""
         className="w-full max-w-48"
       />
 
-      {/* New Chat */}
       <button
         onClick={createNewChat}
         className="flex justify-center items-center w-full py-2 mt-10
@@ -80,7 +78,6 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
         <span className="mr-2 text-xl">+</span> New Chat
       </button>
 
-      {/* Search */}
       <div className="flex items-center gap-2 p-3 mt-4 border border-gray-400 dark:border-white/20 rounded-md">
         <img src={assets.search_icon} className="w-4 not-dark:invert" />
         <input
@@ -92,7 +89,6 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
         />
       </div>
 
-      {/* Recent Chats */}
       {chats.length > 0 && <p className="mt-4 text-sm">Recent Chats</p>}
 
       <div className="flex-1 overflow-y-scroll mt-3 text-sm space-y-3">
@@ -106,7 +102,6 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
             <div
               key={chat._id}
               onClick={() => {
-                navigate('/')
                 setSelectedChat(chat)
                 setIsMenuOpen(false)
               }}
@@ -115,7 +110,6 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
               rounded-md cursor-pointer flex justify-between group"
             >
               <div>
-                {/* 🔴 YAHI MAIN FIX HAI */}
                 <p className="truncate w-full">
                   {chat.name || 'New Chat'}
                 </p>
@@ -138,7 +132,6 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
           ))}
       </div>
 
-      {/* Community */}
       <div
         onClick={() => { navigate('/community'); setIsMenuOpen(false) }}
         className="flex items-center gap-2 p-3 mt-4
@@ -149,7 +142,6 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
         <p className="text-sm">Community Images</p>
       </div>
 
-      {/* Credits */}
       <div
         onClick={() => { navigate('/credits'); setIsMenuOpen(false) }}
         className="flex items-center gap-2 p-3 mt-4
@@ -165,7 +157,6 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
         </div>
       </div>
 
-      {/* Dark Mode */}
       <div className="flex items-center justify-between gap-2 p-3 mt-4 border border-gray-300 dark:border-white/15 rounded-md">
         <div className="flex items-center gap-2 text-sm">
           <img src={assets.theme_icon} className="w-4 not-dark:invert" />
@@ -184,7 +175,6 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
         </label>
       </div>
 
-      {/* User */}
       <div className="flex items-center gap-3 p-3 mt-4 border border-gray-300 dark:border-white/15 rounded-md cursor-pointer group">
         <img src={assets.user_icon} className="w-7 rounded-full" />
         <p className="flex-1 text-sm truncate dark:text-primary">
