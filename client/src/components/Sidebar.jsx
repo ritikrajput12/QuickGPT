@@ -102,6 +102,7 @@ const Sidebar = ({ isMenuOpen, setIsMenuOpen }) => {
             <div
               key={chat._id}
               onClick={() => {
+                navigate('/')
                 setSelectedChat(chat)
                 setIsMenuOpen(false)
               }}
