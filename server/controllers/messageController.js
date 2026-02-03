@@ -100,6 +100,11 @@ export const imageMessageController = async (req, res) => {
 
     const img = await axios.get(imageUrl, { responseType: "arraybuffer" })
 
+    // ✅ ONLY BUG FIX — empty image guard
+    if (!img.data || img.data.length === 0) {
+      throw new Error("Image generation failed")
+    }
+
     const base64Image =
       "data:image/png;base64," +
       Buffer.from(img.data).toString("base64")
