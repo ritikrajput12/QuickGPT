@@ -34,7 +34,7 @@ export const textMessageController = async (req, res) => {
     chat.updatedAt = new Date()
 
     const completion = await openai.chat.completions.create({
-       model: "gemini-3-flash-preview",
+      model: "gemini-3-flash-preview",
       messages: [{ role: "user", content: prompt }]
     })
 
@@ -55,8 +55,6 @@ export const textMessageController = async (req, res) => {
 
     res.json({ success: true, reply: aiMsg })
   } catch (err) {
-      console.log("OPENAI ERROR STATUS:", err.status)
-     console.log("OPENAI ERROR MESSAGE:", err.message)
     res.json({ success: false, message: err.message })
   }
 }
@@ -91,11 +89,14 @@ export const imageMessageController = async (req, res) => {
     chat.updatedAt = new Date()
 
     const encodedPrompt = encodeURIComponent(prompt)
+    const uniqueName = Date.now() + ".png"
+
     const imageUrl =
       process.env.IMAGEKIT_URL_ENDPOINT +
       "/ik-genimg-prompt-" +
       encodedPrompt +
-      "/quickgpt.png"
+      "/quickgpt/" +
+      uniqueName
 
     const img = await axios.get(imageUrl, { responseType: "arraybuffer" })
 
@@ -105,7 +106,7 @@ export const imageMessageController = async (req, res) => {
 
     const upload = await imagekit.upload({
       file: base64Image,
-      fileName: Date.now() + ".png",
+      fileName: uniqueName,
       folder: "quickgpt"
     })
 
