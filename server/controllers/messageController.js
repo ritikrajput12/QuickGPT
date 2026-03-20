@@ -10,12 +10,17 @@ export const textMessageController = async (req, res) => {
     const { chatId, prompt } = req.body
 
     if (!chatId || !prompt) {
-      return res.json({ success: false, message: "chatId and prompt required" })
+      return res.status(400).json({ success: false, message: "chatId and prompt required" })
+    }
+
+    const user = await User.findById(userId)
+    if (!user || user.credits <= 0) {
+      return res.status(403).json({ success: false, message: "Not enough credits" })
     }
 
     const chat = await Chat.findOne({ _id: chatId, userId })
     if (!chat) {
-      return res.json({ success: false, message: "Chat not found" })
+      return res.status(404).json({ success: false, message: "Chat not found" })
     }
 
     const userMsg = {
@@ -27,15 +32,14 @@ export const textMessageController = async (req, res) => {
 
     chat.messages.push(userMsg)
 
-    if (!chat.name || chat.name === "New Chat") {
-      chat.name = prompt.slice(0, 30)
-    }
-
-    chat.updatedAt = new Date()
+    const messages = chat.messages.map(m => ({
+      role: m.role,
+      content: m.content
+    }))
 
     const completion = await openai.chat.completions.create({
-      model: "gemini-3-flash-preview",
-      messages: [{ role: "user", content: prompt }]
+      model: "gpt-4o-mini",
+      messages
     })
 
     const aiMsg = {
@@ -46,16 +50,22 @@ export const textMessageController = async (req, res) => {
     }
 
     chat.messages.push(aiMsg)
+
+    if (!chat.name || chat.name === "New Chat") {
+      chat.name = prompt.slice(0, 30)
+    }
+
+    chat.updatedAt = new Date()
     await chat.save()
 
     await User.updateOne(
-      { _id: userId },
+      { _id: userId, credits: { $gt: 0 } },
       { $inc: { credits: -1 } }
     )
 
     res.json({ success: true, reply: aiMsg })
   } catch (err) {
-    res.json({ success: false, message: err.message })
+    res.status(500).json({ success: false, message: err.message })
   }
 }
 
@@ -65,12 +75,17 @@ export const imageMessageController = async (req, res) => {
     const { chatId, prompt, isPublished } = req.body
 
     if (!chatId || !prompt) {
-      return res.json({ success: false, message: "chatId and prompt required" })
+      return res.status(400).json({ success: false, message: "chatId and prompt required" })
+    }
+
+    const user = await User.findById(userId)
+    if (!user || user.credits < 2) {
+      return res.status(403).json({ success: false, message: "Not enough credits" })
     }
 
     const chat = await Chat.findOne({ _id: chatId, userId })
     if (!chat) {
-      return res.json({ success: false, message: "Chat not found" })
+      return res.status(404).json({ success: false, message: "Chat not found" })
     }
 
     const userMsg = {
@@ -100,7 +115,6 @@ export const imageMessageController = async (req, res) => {
 
     const img = await axios.get(imageUrl, { responseType: "arraybuffer" })
 
-    // ✅ ONLY BUG FIX — empty image guard
     if (!img.data || img.data.length === 0) {
       throw new Error("Image generation failed")
     }
@@ -127,15 +141,12 @@ export const imageMessageController = async (req, res) => {
     await chat.save()
 
     await User.updateOne(
-      { _id: userId },
+      { _id: userId, credits: { $gte: 2 } },
       { $inc: { credits: -2 } }
     )
 
     res.json({ success: true, reply: aiMsg })
   } catch (err) {
-    res.json({ success: false, message: err.message })
+    res.status(500).json({ success: false, message: err.message })
   }
 }
-
-
-

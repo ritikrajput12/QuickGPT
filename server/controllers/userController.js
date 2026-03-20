@@ -1,96 +1,67 @@
-import User from "../models/User.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import Chat from "../models/Chat.js";
+import User from "../models/User.js"
+import jwt from "jsonwebtoken"
+import bcrypt from "bcryptjs"
+import Chat from "../models/Chat.js"
 
-// Generate JWT
 const generationToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  });
-};
+    expiresIn: "30d"
+  })
+}
 
-// ================= REGISTER =================
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.body
 
   try {
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.json({
-        success: false,
-        message: "User already exists",
-      });
+    if (!password || password.length < 6) {
+      return res.json({ success: false, message: "Password must be at least 6 characters" })
     }
 
-    // ❗❗ YAHI MAIN BUG THA
-    // ❌ yahan bcrypt.hash NAHI karna
-    // ✅ hashing User model (pre save) me hoti hai
+    const userExists = await User.findOne({ email })
+    if (userExists) {
+      return res.json({ success: false, message: "User already exists" })
+    }
 
     const user = await User.create({
       name,
       email,
-      password, // plain password bhejo
-    });
+      password
+    })
 
-    const token = generationToken(user._id);
+    const token = generationToken(user._id)
 
-    res.json({
-      success: true,
-      token,
-    });
+    res.json({ success: true, token })
   } catch (err) {
-    res.json({
-      success: false,
-      message: err.message,
-    });
+    res.status(500).json({ success: false, message: err.message })
   }
-};
+}
 
-// ================= LOGIN =================
 export const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
     if (!user) {
-      return res.json({
-        success: false,
-        message: "Invalid email or password",
-      });
+      return res.json({ success: false, message: "Invalid email or password" })
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
-      return res.json({
-        success: false,
-        message: "Invalid email or password",
-      });
+      return res.json({ success: false, message: "Invalid email or password" })
     }
 
-    const token = generationToken(user._id);
+    const token = generationToken(user._id)
 
-    res.json({
-      success: true,
-      token,
-    });
+    res.json({ success: true, token })
   } catch (err) {
-    res.json({
-      success: false,
-      message: err.message,
-    });
+    res.status(500).json({ success: false, message: err.message })
   }
-};
+}
 
-// ================= USER DATA =================
 export const getUser = async (req, res) => {
-  res.json({
-    success: true,
-    user: req.user,
-  });
-};
+  res.json({ success: true, user: req.user })
+}
 
-// ================= COMMUNITY IMAGES =================
 export const getPublishedImages = async (req, res) => {
   try {
     const images = await Chat.aggregate([
@@ -98,27 +69,21 @@ export const getPublishedImages = async (req, res) => {
       {
         $match: {
           "messages.isImage": true,
-          "messages.isPublished": true,
-        },
+          "messages.isPublished": true
+        }
       },
       {
         $project: {
           _id: 0,
           imageUrl: "$messages.content",
-          userName: "$userName",
-        },
-      },
-    ]);
+          userName: "$userName"
+        }
+      }
+    ])
 
-    res.json({
-      success: true,
-      images: images.reverse(),
-    });
+    res.json({ success: true, images: images.reverse() })
   } catch (err) {
-    res.json({
-      success: false,
-      message: err.message,
-    });
+    res.status(500).json({ success: false, message: err.message })
   }
-};
+}
 
