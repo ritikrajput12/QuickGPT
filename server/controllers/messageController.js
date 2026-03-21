@@ -13,11 +13,6 @@ export const textMessageController = async (req, res) => {
       return res.status(400).json({ success: false, message: "chatId and prompt required" })
     }
 
-    const user = await User.findById(userId)
-    if (!user || user.credits <= 0) {
-      return res.status(403).json({ success: false, message: "Not enough credits" })
-    }
-
     const chat = await Chat.findOne({ _id: chatId, userId })
     if (!chat) {
       return res.status(404).json({ success: false, message: "Chat not found" })
@@ -32,38 +27,34 @@ export const textMessageController = async (req, res) => {
 
     chat.messages.push(userMsg)
 
-    const messages = chat.messages.map(m => ({
-      role: m.role,
-      content: m.content
-    }))
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages
-    })
-
-    const aiMsg = {
-      role: "assistant",
-      content: completion.choices[0].message.content,
-      timestamps: Date.now(),
-      isImage: false
-    }
-
-    chat.messages.push(aiMsg)
-
     if (!chat.name || chat.name === "New Chat") {
       chat.name = prompt.slice(0, 30)
     }
 
     chat.updatedAt = new Date()
+
+    const completion = await openai.chat.completions.create({
+      model: "gemini-3-flash-preview",
+      messages: [{ role: "user", content: prompt }]
+    })
+
+    const aiMsg = {
+      role: "assistant",
+      content: completion?.choices?.[0]?.message?.content || "No response",
+      timestamps: Date.now(),
+      isImage: false
+    }
+
+    chat.messages.push(aiMsg)
     await chat.save()
 
     await User.updateOne(
-      { _id: userId, credits: { $gt: 0 } },
+      { _id: userId },
       { $inc: { credits: -1 } }
     )
 
     res.json({ success: true, reply: aiMsg })
+
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }
@@ -76,11 +67,6 @@ export const imageMessageController = async (req, res) => {
 
     if (!chatId || !prompt) {
       return res.status(400).json({ success: false, message: "chatId and prompt required" })
-    }
-
-    const user = await User.findById(userId)
-    if (!user || user.credits < 2) {
-      return res.status(403).json({ success: false, message: "Not enough credits" })
     }
 
     const chat = await Chat.findOne({ _id: chatId, userId })
@@ -141,11 +127,12 @@ export const imageMessageController = async (req, res) => {
     await chat.save()
 
     await User.updateOne(
-      { _id: userId, credits: { $gte: 2 } },
+      { _id: userId },
       { $inc: { credits: -2 } }
     )
 
     res.json({ success: true, reply: aiMsg })
+
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }
