@@ -15,7 +15,7 @@ export const createChat = async (req, res) => {
 
     res.json({ success: true, message: "Chat created" })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    res.json({ success: false, message: error.message })
   }
 }
 
@@ -26,7 +26,7 @@ export const getChats = async (req, res) => {
 
     res.json({ success: true, chats })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    res.json({ success: false, message: error.message })
   }
 }
 
@@ -39,6 +39,6 @@ export const deleteChat = async (req, res) => {
 
     res.json({ success: true, message: "Chat Deleted" })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    res.json({ success: false, message: error.message })
   }
 }

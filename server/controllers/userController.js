@@ -13,10 +13,6 @@ export const registerUser = async (req, res) => {
   const { name, email, password } = req.body
 
   try {
-    if (!password || password.length < 6) {
-      return res.json({ success: false, message: "Password must be at least 6 characters" })
-    }
-
     const userExists = await User.findOne({ email })
     if (userExists) {
       return res.json({ success: false, message: "User already exists" })
@@ -32,7 +28,7 @@ export const registerUser = async (req, res) => {
 
     res.json({ success: true, token })
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
+    res.json({ success: false, message: err.message })
   }
 }
 
@@ -54,7 +50,7 @@ export const loginUser = async (req, res) => {
 
     res.json({ success: true, token })
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
+    res.json({ success: false, message: err.message })
   }
 }
 
@@ -83,7 +79,6 @@ export const getPublishedImages = async (req, res) => {
 
     res.json({ success: true, images: images.reverse() })
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message })
+    res.json({ success: false, message: err.message })
   }
 }
-
