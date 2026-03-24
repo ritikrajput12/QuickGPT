@@ -1,22 +1,32 @@
-# 🚀 QuickGPT
+# QuickGPT
 
-QuickGPT is a full-stack AI chat application where users can interact with an AI model, generate text and images, and manage conversations with a credit-based system.
+QuickGPT is a full-stack AI-based web application where users can interact with an AI model, generate images, and manage their usage through a credit-based system.
 
----
-
-## 🧠 Features
-
-* 🔐 User Authentication (JWT-based login/signup)
-* 💬 AI Chat (text generation)
-* 🖼️ Image Generation
-* 🧾 Chat History (stored in database)
-* 💳 Credit-Based Usage System
-* 🌐 Community Gallery (published images)
-* 🎨 Dark/Light Mode UI
+Live Demo: https://quick-gpt-5k67.vercel.app
 
 ---
 
-## 🛠️ Tech Stack
+## Overview
+
+This project is built to understand how real-world AI applications work. It includes authentication, API integration, payments, and database handling in a single system.
+
+Users can log in, send prompts, generate responses and images, and track their usage through credits.
+
+---
+
+## Features
+
+* User authentication (JWT-based login and signup)
+* AI chat (text generation using API)
+* Image generation
+* Chat history stored in database
+* Credit-based usage system
+* Community gallery for shared images
+* Light and dark mode UI
+
+---
+
+## Tech Stack
 
 ### Frontend
 
@@ -34,99 +44,91 @@ QuickGPT is a full-stack AI chat application where users can interact with an AI
 
 ### Services
 
-* OpenAI API (text generation)
-* ImageKit (image handling)
-* Stripe (payments)
+* OpenAI API
+* ImageKit
+* Stripe
 
 ---
 
-## ⚙️ Installation & Setup
+## Setup
 
-### 1. Clone the repository
+### Clone the repository
 
+```bash id="g6qv03"
 git clone https://github.com/ritikrajput12/QuickGPT.git
-
 cd QuickGPT
+```
 
 ---
 
-### 2. Setup Backend
+### Backend setup
 
+```bash id="r8p4b1"
 cd server
-
 npm install
+```
 
-Create a `.env` file in server folder and add:
+Create a `.env` file in the server folder and add:
 
+```env id="0k4k9j"
 MONGODB_URI=your_mongodb_uri
 JWT_SECRET=your_secret
 OPENAI_API_KEY=your_api_key
 STRIPE_SECRET_KEY=your_stripe_key
 IMAGEKIT_URL_ENDPOINT=your_url
+```
 
 Run backend:
 
+```bash id="0jccco"
 npm run server
+```
 
 ---
 
-### 3. Setup Frontend
+### Frontend setup
 
+```bash id="6uxr3i"
 cd ../client
-
 npm install
-
 npm run dev
+```
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
+```id="5v5n2k"
 QuickGPT/
-│
-├── client/   → React frontend
-├── server/   → Node/Express backend
-├── .gitignore
+├── client/
+├── server/
 └── README.md
+```
 
 ---
 
-## 🔄 Application Flow
+## How it works
 
-1. User logs in → JWT token generated
-2. User sends prompt → frontend sends request to backend
-3. Backend validates user + credits
-4. Request sent to AI API
-5. Response stored in MongoDB
-6. Response returned to frontend and displayed
-
----
-
-## 🔒 Security
-
-* JWT-based authentication
-* Protected API routes
-* Environment variables for sensitive data
+1. User logs in and receives a JWT token
+2. User sends a prompt from the frontend
+3. Backend verifies user and available credits
+4. Request is sent to the AI service
+5. Response is stored in the database
+6. Result is returned and displayed on the UI
 
 ---
 
-## 🚧 Improvements (Future Scope)
+## Future Improvements
 
-* Streaming responses (real-time typing)
-* Chat pagination
+* Streaming responses
 * Better error handling
+* Chat pagination
 * Rate limiting
-* Multi-AI provider support
+* Support for multiple AI providers
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 Ritik Rajput
-GitHub: https://github.com/ritikrajput12
-
----
-
-## ⭐ If you like this project
-
-Give it a star on GitHub!
+https://github.com/ritikrajput12
