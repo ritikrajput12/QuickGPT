@@ -129,9 +129,12 @@ const ChatBox = () => {
     }, [selectedChat?.messages])
 
     return (
-        <div className='h-full flex flex-col p-5 md:p-10 xl:px-30 max-md:pt-14 2xl:pr-40'>
 
-            <div ref={containerRef} className='flex-1 overflow-y-auto min-h-0 mb-5'>
+        <div className='h-full flex flex-col max-w-5xl mx-auto w-full px-5 md:px-10 max-md:pt-14'>
+            <div
+                ref={containerRef}
+                className='flex-1 overflow-y-auto min-h-0 mb-2'
+            >
 
                 {(!selectedChat || selectedChat.messages.length === 0) && (
                     <div className='h-full flex flex-col items-center justify-center gap-2'>
@@ -173,13 +176,13 @@ const ChatBox = () => {
 
             <form
                 onSubmit={onSubmit}
-                className='bg-primary/20 dark:bg-[#583C79]/30 border border-primary dark:border-[#80609F]/30 rounded-full w-full max-w-2xl p-3 pl-4 mt-auto mx-auto flex gap-2 items-center'
+                className='bg-primary/20 dark:bg-[#583C79]/30 border border-primary dark:border-[#80609F]/30 rounded-full w-full max-w-2xl p-3 pl-4 mb-5 mx-auto flex gap-2 items-center'
             >
 
                 <select
                     value={mode}
                     onChange={(e) => setMode(e.target.value)}
-                    className='text-sm pl-3 pr-2 outline-none'
+                    className='text-sm pl-3 pr-2 outline-none text-black dark:text-white bg-transparent'
                 >
                     <option value='text'>Text</option>
                     <option value='image'>Image</option>
@@ -189,7 +192,7 @@ const ChatBox = () => {
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder='Type your prompt here...'
-                    className='flex-1 min-w-0 text-sm outline-none'
+                    className='flex-1 min-w-0 text-sm outline-none text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400'
                 />
 
                 <button disabled={loading} className="flex-shrink-0">

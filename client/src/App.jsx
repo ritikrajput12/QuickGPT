@@ -30,10 +30,12 @@ const App = () => {
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="fixed top-3 left-3 z-[9999]
-             w-12 h-12 rounded-xl
-             bg-[#2a2233]
-             text-white text-2xl
-             flex items-center justify-center"
+  w-12 h-12 rounded-xl
+  bg-gray-200 dark:bg-[#2a2233]
+  text-black dark:text-white
+  border border-gray-500 dark:border-gray-600
+  shadow-lg
+  flex items-center justify-center"
         >
           ☰
         </button>
@@ -62,7 +64,7 @@ const App = () => {
             />
 
             <div
-              className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "md:ml-72" : "ml-0"
+              className={`flex-1 h-screen overflow-hidden transition-all duration-300 ${isSidebarOpen ? "md:ml-72" : "ml-0"
                 }`}
             >
               <Routes>

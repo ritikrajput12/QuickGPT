@@ -74,7 +74,7 @@ ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
 
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="text-white text-2xl cursor-pointer"
+                    className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 text-black dark:text-white text-2xl"
                 >
                     ☰
                 </button>
@@ -201,13 +201,6 @@ rounded-md cursor-pointer hover:scale-105 transition-all"
                     />
                 )}
             </div>
-
-            <img
-                onClick={() => setIsMenuOpen(false)}
-                src={assets.close_icon}
-                className="absolute top-3 right-3 w-5 h-5 cursor-pointer md:hidden not-dark:invert"
-            />
-
         </div>
     )
 }
