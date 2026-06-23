@@ -14,10 +14,9 @@ import { Toaster } from 'react-hot-toast'
 const App = () => {
   const { user, loadingUser } = useAppContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const { pathname } = useLocation()
 
-  // Debug line add kiya
-  console.log('User:', user)
 
   if (loadingUser) {
     return <Loading />
@@ -26,6 +25,19 @@ const App = () => {
   return (
     <>
       <Toaster />
+
+      {user && !isSidebarOpen && (
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="fixed top-3 left-3 z-[9999]
+             w-12 h-12 rounded-xl
+             bg-[#2a2233]
+             text-white text-2xl
+             flex items-center justify-center"
+        >
+          ☰
+        </button>
+      )}
 
       {!isMenuOpen && user && (
         <img
@@ -45,14 +57,21 @@ const App = () => {
             <Sidebar
               isMenuOpen={isMenuOpen}
               setIsMenuOpen={setIsMenuOpen}
+              isSidebarOpen={isSidebarOpen}
+              setIsSidebarOpen={setIsSidebarOpen}
             />
 
-            <Routes>
-              <Route path="/" element={<ChatBox />} />
-              <Route path="/credits" element={<Credits />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/loading" element={<Loading />} />
-            </Routes>
+            <div
+              className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "md:ml-72" : "ml-0"
+                }`}
+            >
+              <Routes>
+                <Route path="/" element={<ChatBox />} />
+                <Route path="/credits" element={<Credits />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/loading" element={<Loading />} />
+              </Routes>
+            </div>
           </div>
         </div>
       )}
