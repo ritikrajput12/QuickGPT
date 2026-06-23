@@ -64,7 +64,7 @@ const App = () => {
             />
 
             <div
-              className={`flex-1 h-screen overflow-hidden transition-all duration-300 md:${isSidebarOpen ? "ml-72" : "ml-0"
+              className={`flex-1 overflow-hidden transition-all duration-300 ${isSidebarOpen ? "md:ml-72" : "md:ml-0"
                 }`}
             >
               <Routes>
