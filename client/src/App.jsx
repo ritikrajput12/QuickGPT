@@ -14,7 +14,7 @@ import { Toaster } from 'react-hot-toast'
 const App = () => {
   const { user, loadingUser } = useAppContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const { pathname } = useLocation()
 
 
@@ -30,7 +30,7 @@ const App = () => {
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="fixed top-3 left-3 z-[9999]
-  w-12 h-12 rounded-xl
+  w-8 h-8 rounded-xl
   bg-gray-200 dark:bg-[#2a2233]
   text-black dark:text-white
   border border-gray-500 dark:border-gray-600
@@ -64,7 +64,7 @@ const App = () => {
             />
 
             <div
-              className={`flex-1 h-screen overflow-hidden transition-all duration-300 ${isSidebarOpen ? "md:ml-72" : "ml-0"
+              className={`flex-1 h-screen overflow-hidden transition-all duration-300 md:${isSidebarOpen ? "ml-72" : "ml-0"
                 }`}
             >
               <Routes>

@@ -26,7 +26,7 @@ const Message = ({ message }) => {
           <img src={assets.user_icon} alt="" className="w-8 rounded-full" />
         </div>
       ) : (
-        <div className="inline-flex flex-col gap-2 p-2 px-4 max-w-2xl bg-primary/20 dark:bg-[#57317C] border border-[#80609F]/30 rounded-md my-4">
+        <div className="flex flex-col gap-2 p-2 px-4 w-full bg-primary/20 dark:bg-[#57317C] border border-[#80609F]/30 rounded-md my-4">
           {message.isImage === true ? (
             <img
               src={message.content}

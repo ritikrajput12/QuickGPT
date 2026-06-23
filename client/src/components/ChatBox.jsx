@@ -130,7 +130,7 @@ const ChatBox = () => {
 
     return (
 
-        <div className='h-full flex flex-col max-w-5xl mx-auto w-full px-5 md:px-10 max-md:pt-14'>
+        <div className='h-full flex flex-col max-w-5xl mx-auto w-full px-5 md:px-10'>
             <div
                 ref={containerRef}
                 className='flex-1 overflow-y-auto min-h-0 mb-2'
